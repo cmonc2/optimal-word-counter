@@ -10,7 +10,11 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
-    }
+    },
+    "types": ["jest", "node"],
+    "skipLibCheck": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*"],
+  "exclude": ["src/client/**/*", "node_modules", "dist"]
 }

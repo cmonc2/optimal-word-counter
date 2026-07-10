@@ -41,10 +41,18 @@ describe('POST /upload', () => {
   it('should returns error 500 (file is missing)', () => {
     return request(App)
     .post('/api/v1/upload/1')
-    .attach('file', null)
     .expect(500)
     .then(response => {
       expect(response.body).toStrictEqual({ message: "File is missing" })
     })
+  })
+})
+
+describe('GET /', () => {
+  it('should serve the React client HTML interface', () => {
+    return request(App)
+      .get('/')
+      .expect(200)
+      .expect('Content-Type', /html/)
   })
 })

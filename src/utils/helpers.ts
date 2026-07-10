@@ -8,7 +8,10 @@ type Options = {
 
 /**
  * @param  {string} path
- * * Check if file exists and if not creates it
+ * @param  {Options} opts
+ * @returns Promise<void>
+ * *  Checks if a file exists at the given path. If not, it creates a new one with the specified options.
+ *  This function is useful for testing purposes.
  */
 export function FindOrCreateFile(path: string, opts: Options): Promise<void> {
   return new Promise((resolve, reject) => {

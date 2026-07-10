@@ -1,22 +1,22 @@
 {
-  "name": "siono-challenge-app",
+  "name": "optimal-word-counter",
   "version": "1.0.0",
   "author": "Simon Rotjes <simon.9864@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "cd src/client && yarn && yarn build",
     "start": "nodemon src/server.ts",
-    "test": "jest"
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"yarn start\" \"yarn --cwd src/client dev\"",
+    "test": "jest && yarn --cwd src/client test"
   },
   "dependencies": {
-    "express": "^4.17.3",
-    "connect": "^3.7.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "express-openapi-validator": "^4.13.5",
     "line-reader": "^0.4.0",
-    "multer": "^1.4.4",
-    "swagger-routes-express": "^3.3.1",
+    "multer": "^1.4.5-lts.1",
+    "swagger-ui-express": "^5.0.1",
     "timsort": "^0.3.0",
-    "validator": "^13.7.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
@@ -24,8 +24,9 @@
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
     "@types/supertest": "^2.0.11",
-    "@types/validator": "^13.7.1",
+    "@types/swagger-ui-express": "^4.1.6",
     "@types/yamljs": "^0.2.31",
+    "concurrently": "^8.2.2",
     "jest": "^27.5.1",
     "lorem-ipsum": "^2.0.4",
     "nodemon": "^2.0.15",

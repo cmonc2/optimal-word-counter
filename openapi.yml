@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: Optimal Word Counter API
+  description: |
+    A high-performance API that processes large text files (up to 1GB, UTF-8) 
+    and returns the top N most frequent words found, sorted in descending order.
+    
+    ### Key Features:
+    * **Memory Efficient:** Processes files as streams on-the-fly, keeping memory usage minimal.
+    * **Multi-language Support:** Correctly handles Unicode letters (supports multiple alphabets).
+    * **Interactive Documentation:** Served directly from the server.
+  contact:
+    email: simondx777@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+- url: /api/v1
+  description: Local development server v1
+
+paths:
+  /upload/{top}:
+    post:
+      summary: Upload a text file to count word frequencies
+      description: |
+        Uploads a plain text file (.txt) and computes the top N most frequent 
+        case-insensitive words.
+      tags:
+        - Word Counter Operations
+      parameters:
+        - in: path
+          name: top
+          description: The number of top frequent words to return (N). Must be a positive integer.
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+          required: true
+      requestBody:
+        description: The text file to be processed.
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The plain text file (UTF-8 encoded, max size 1GB).
+      responses:
+        200:
+          description: Calculation completed successfully. Returns sorted word frequencies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        500:
+          description: Server error or invalid input file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UploadResponse:
+      type: object
+      description: List of the most frequent words found in the file.
+      required:
+        - frecuencies
+      properties:
+        frecuencies:
+          type: array
+          description: Array of word counts, sorted in descending order of frequency.
+          items:
+            type: object
+            required:
+              - word
+              - count
+            properties:
+              word:
+                type: string
+                description: The lowercase word found.
+                example: lorem
+              count:
+                type: integer
+                description: Number of occurrences.
+                example: 1247
+      example:
+        frecuencies:
+          - word: lorem
+            count: 1247
+          - word: ipsum
+            count: 852
+          - word: dolor
+            count: 630
+    ErrorResponse:
+      type: object
+      description: Detailed error response.
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Readable description of the error.
+          example: File not supported

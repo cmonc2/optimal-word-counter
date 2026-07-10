@@ -1,6 +1,11 @@
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
 import app from './app';
 
-const PORT = 3000
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.info(`Listening on http://localhost:${PORT}`)

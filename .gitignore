@@ -1,3 +1,13 @@
 coverage
 node_modules
 yarn-error.log*
+
+# Test generated files
+src/__tests__/dummy.txt
+src/__tests__/image.jpg
+
+# Build folders
+src/client/dist/
+
+# Environment variables
+.env

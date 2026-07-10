@@ -2,6 +2,8 @@ import express from 'express';
 import router from './router'
 import uploader from './utils/multer';
 import * as OpenApiValidator from 'express-openapi-validator';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 
 class App {
   public server;
@@ -20,7 +22,7 @@ class App {
      * * Swagger setups
      */ 
 
-    const yamlSpecFile = './config/openapi.yml',
+    const yamlSpecFile = './openapi.yml',
           validatorOptions = {
             apiSpec: yamlSpecFile,
             validateRequests: false,
@@ -36,17 +38,10 @@ class App {
     });
 
     /**
-     * * Uncomment to connect functions in /api/controllers to API schema declared
-     */ 
-    // const api = require('./api/controllers')
-    // const YAML = require('yamljs')
-    // const apiDefinition = YAML.load('./config/openapi.yml') // load the api as json
-    // const { connector } = require('swagger-routes-express')
-    // connector(api, apiDefinition, {
-    //   onCreateRoute: (method: string, descriptor: any[]) => {
-    //     console.log(`${method}: ${descriptor[0]} : ${(descriptor[1] as any).name}`)
-    //   }
-    // })(this.server)
+     * * Swagger UI Setup (Serve API documentation page)
+     */
+    const swaggerDocument = YAML.load(yamlSpecFile);
+    this.server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     /**
      * * Multer setups

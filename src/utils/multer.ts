@@ -32,8 +32,10 @@ class TextReaderEngine implements multer.StorageEngine {
 
     // go trough each line of stream (using line-reader)
     lineReader.eachLine(file.stream, function(line: string, last: boolean) {
-      // clean up undesirables chars (spaces, tabs, dots)
-      let words = line.trim().split(/[ \t\n\r\.]+/g);
+      // clean up punctuation and split by spaces/tabs/newlines
+      // Using Unicode property escapes (\p{L} for letters, \p{N} for numbers)
+      // to support multi-language UTF-8 text and ignore punctuation.
+      let words = line.trim().split(/[^\p{L}\p{N}']+/gu);
 
       // iterate array of words and stack each one 
       for(let i = 0; i < words.length; i++) {
@@ -52,8 +54,8 @@ class TextReaderEngine implements multer.StorageEngine {
       if(last) {
         const wordList: string[] = Object.keys(wordCounts);
 
-        // sort the most frequent words (ascending)
-        TimSort.sort(wordList, (a:number, b:number) => {
+        // sort the most frequent words (descending by frequency, then alphabetically)
+        TimSort.sort(wordList, (a: string, b: string) => {
           if(wordCounts[a] < wordCounts[b])
             return 1;
       
