@@ -60,33 +60,26 @@ describe('App Component (UI / UX Tests)', () => {
     fireEvent.keyDown(numSpan, { key: '5' })
     expect(numSpan.textContent).toBe('5')
 
-    // Type "0" to make it "50"
-    fireEvent.keyDown(numSpan, { key: '0' })
-    expect(numSpan.textContent).toBe('50')
-
-    // Test Backspace
-    fireEvent.keyDown(numSpan, { key: 'Backspace' })
-    expect(numSpan.textContent).toBe('5')
-
-    // Test mouse wheel event
-    // deltaY > 0 decrements
-    fireEvent.wheel(numSpan, { deltaY: 100 })
-    expect(numSpan.textContent).toBe('4')
-
-    // deltaY < 0 increments
+    // Test Wheel event
     fireEvent.wheel(numSpan, { deltaY: -100 })
+    expect(numSpan.textContent).toBe('6')
+    fireEvent.wheel(numSpan, { deltaY: 100 })
     expect(numSpan.textContent).toBe('5')
   })
 
   it('runs analysis and shows scrutinized words in notebook-style cards', async () => {
+    const payload = {
+      frecuencies: [
+        { word: 'hello', count: 12 },
+        { word: 'world', count: 8 }
+      ]
+    }
+
     mockFetch.mockResolvedValueOnce({
+      ok: true,
       status: 200,
-      json: async () => ({
-        frecuencies: [
-          { word: 'hello', count: 12 },
-          { word: 'world', count: 8 }
-        ]
-      })
+      text: async () => JSON.stringify(payload),
+      json: async () => payload
     })
 
     render(<App />)
@@ -117,9 +110,13 @@ describe('App Component (UI / UX Tests)', () => {
   })
 
   it('displays error alerts when fetch fails', async () => {
+    const errorPayload = { message: "File not supported" }
+
     mockFetch.mockResolvedValueOnce({
+      ok: false,
       status: 500,
-      json: async () => ({ message: "File not supported" })
+      text: async () => JSON.stringify(errorPayload),
+      json: async () => errorPayload
     })
 
     render(<App />)

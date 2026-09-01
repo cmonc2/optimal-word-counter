@@ -85,31 +85,19 @@ function App() {
           throw new Error('File is too large for processing (maximum allowed size is 4.5 MB).')
         }
         if (response.status === 404) {
-          throw new Error('Upload endpoint not found (HTTP 404). Please try again.')
+          throw new Error('Upload endpoint not found (HTTP 404).')
         }
 
+        const rawText = await response.text()
         let data: any
-        if (typeof response.json === 'function') {
-          try {
-            data = await response.json()
-          } catch {
-            if (typeof response.text === 'function') {
-              const text = await response.text()
-              throw new Error(text ? `Server error: ${text.slice(0, 100)}` : 'Invalid response from server')
-            }
-            throw new Error('Invalid JSON response from server')
-          }
-        } else if (typeof response.text === 'function') {
-          const text = await response.text()
-          try {
-            data = JSON.parse(text)
-          } catch {
-            throw new Error(text ? `Server error: ${text.slice(0, 100)}` : 'Invalid response from server')
-          }
+        try {
+          data = JSON.parse(rawText)
+        } catch {
+          throw new Error(rawText ? `Server returned: ${rawText.slice(0, 150)}` : `Server error (HTTP ${response.status})`)
         }
 
-        if (response.status !== 200 || !data) {
-          throw new Error((data && data.message) || 'An error occurred while analyzing the file.')
+        if (!response.ok || !data) {
+          throw new Error(data?.message || 'An error occurred while analyzing the file.')
         }
         return data
       })
