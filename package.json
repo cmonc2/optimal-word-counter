@@ -10,7 +10,7 @@
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"pnpm start:server\" \"pnpm --filter client dev\"",
     "start:server": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
-    "build": "pnpm --filter client build && tsc",
+    "build": "pnpm --filter client build && tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run && pnpm --filter client test",
     "test:server": "vitest run",

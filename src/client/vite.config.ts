@@ -18,6 +18,10 @@ export default defineConfig(({ mode }) => {
         fastRefresh: !process.env.VITEST,
       }),
     ],
+    build: {
+      outDir: path.resolve(import.meta.dirname, '../../dist'),
+      emptyOutDir: true,
+    },
     server: {
       host: '0.0.0.0',
       port: env.CLIENT_PORT,

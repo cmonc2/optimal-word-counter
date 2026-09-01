@@ -1,14 +1,19 @@
 {
   "buildCommand": "pnpm build",
-  "outputDirectory": "src/client/dist",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": "openapi.yml"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "destination": "/api"
     },
     {
       "source": "/api-docs(.*)",
-      "destination": "/api/index"
+      "destination": "/api"
     },
     {
       "source": "/(.*)",
