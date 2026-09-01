@@ -1,58 +1,42 @@
-import { loremIpsum } from 'lorem-ipsum'
-import fs from 'fs'
+import { loremIpsum } from 'lorem-ipsum';
+import fs from 'fs';
 
-type Options = {
-  count: number,
-  size: number
-}
+export type Options = {
+  count?: number | null;
+  size?: number | null;
+};
 
 /**
- * @param  {string} path
- * @param  {Options} opts
- * @returns Promise<void>
- * *  Checks if a file exists at the given path. If not, it creates a new one with the specified options.
- *  This function is useful for testing purposes.
+ * Checks if a file exists at the given path. If not, creates a new one for testing purposes.
  */
-export function FindOrCreateFile(path: string, opts: Options): Promise<void> {
-  return new Promise((resolve, reject) => {
-    fs.open(path, 'r', (err: NodeJS.ErrnoException | null) => {
-      if (err && err.code === 'ENOENT') {
+export async function FindOrCreateFile(filePath: string, opts?: Options): Promise<void> {
+  if (fs.existsSync(filePath)) {
+    return;
+  }
 
-        let data: string | Buffer = '';
+  let data: string | Buffer = '';
 
-        if(opts) {
-          if(opts.count) {
-            const utf8Words = [
-              "Ernleȝe", "liðe", "Laȝamon", "Leovenaðes", "þer", "æðelen", "Кругом", // Middle English
-              "Sîne", "klâwen", "stîget", "ûf", "grôzer", "grâwen", "tägelîch", // Middle High German
-              "пустынных", "бедный", "топким", "там", "лес", "солнца", "Река", // Russian
-              "Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", // Latin
-              "Je", "peux", "manger", "du", "verre", "ça", "fait", // French
-              "obras", "todo", "sol", "debajo", "es", "vanidad", "del" // Spanish
-            ]
-  
-            data = loremIpsum({
-              count: opts.count,  // Number of "words", "sentences", or "paragraphs"
-              format: "plain",         // "plain" or "html"
-              random: Math.random,     // A PRNG function
-              suffix: "\n",            // Line ending, defaults to "\n" or "\r\n" (win32)
-              units: "paragraph",      // paragraph(s), "sentence(s)", or "word(s)"
-              words: utf8Words        // Array of words to draw from
-            })
-          }
+  if (opts?.count) {
+    const utf8Words = [
+      'Ernleȝe', 'liðe', 'Laȝamon', 'Leovenaðes', 'þer', 'æðelen', 'Кругом',
+      'Sîne', 'klâwen', 'stîget', 'ûf', 'grôzer', 'grâwen', 'tägelîch',
+      'пустынных', 'бедный', 'топким', 'там', 'лес', 'солнца', 'Река',
+      'Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing',
+      'Je', 'peux', 'manger', 'du', 'verre', 'ça', 'fait',
+      'obras', 'todo', 'sol', 'debajo', 'es', 'vanidad', 'del',
+    ];
 
-          if(opts.size) data = Buffer.alloc(1024*1024*opts.size)
-        }
-  
-        try {
-          fs.writeFileSync(path, data ? data : '')
-          resolve()       
-        } catch (error) {
-          console.log(error)
-          reject()
-        }
-      }
-      resolve()
-    })
-  })
+    data = loremIpsum({
+      count: opts.count,
+      format: 'plain',
+      random: Math.random,
+      suffix: '\n',
+      units: 'paragraph',
+      words: utf8Words,
+    });
+  } else if (opts?.size) {
+    data = Buffer.alloc(1024 * 1024 * opts.size);
+  }
+
+  fs.writeFileSync(filePath, data);
 }

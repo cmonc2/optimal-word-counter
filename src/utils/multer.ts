@@ -11,10 +11,10 @@ class TextReaderEngine implements multer.StorageEngine {
   constructor() {}
 
   /**
-   * @param  {Request} _req
+   * @param  {Request} req
    * @param  {Express.Multer.File} file
-   * @param  {(error:Error|null)=>void} cb
-   * * Includes the quantity requested most frequented words of the file in the object returned by multer
+   * @param  {(error?: any, info?: FileResult) => void} cb
+   * * Includes the quantity requested most frequent words of the file in the object returned by multer
    */
   _handleFile = (
     req: Request,
@@ -29,50 +29,32 @@ class TextReaderEngine implements multer.StorageEngine {
       return;
     }
 
-    // go through each line of stream (using line-reader)
+    // Process stream line-by-line using line-reader
     lineReader.eachLine(file.stream, (line: string, last: boolean) => {
-      // clean up punctuation and split by spaces/tabs/newlines
-      // Using Unicode property escapes (\p{L} for letters, \p{N} for numbers)
-      // to support multi-language UTF-8 text and ignore punctuation.
+      // Split by non-alphanumeric unicode characters to support multi-language UTF-8 text
       const words = line.trim().split(/[^\p{L}\p{N}']+/gu);
 
-      // iterate array of words and stack each one
       for (let i = 0; i < words.length; i++) {
         const word = words[i].toLowerCase();
-
         if (!word) continue;
 
-        if (Object.prototype.hasOwnProperty.call(wordCounts, word)) {
-          wordCounts[word]++;
-        } else {
-          wordCounts[word] = 1;
-        }
+        // O(1) frequency tallying
+        wordCounts[word] = (wordCounts[word] || 0) + 1;
       }
 
       if (last) {
         const wordList: string[] = Object.keys(wordCounts);
 
-        // sort the most frequent words (descending by frequency, then alphabetically)
+        // Sort by frequency descending, then alphabetically ascending
         TimSort.sort(wordList, (a: string, b: string) => {
           if (wordCounts[a] < wordCounts[b]) return 1;
-
           if (wordCounts[a] === wordCounts[b] && a > b) return 1;
-
           return -1;
         });
 
-        const length: number =
-          wordList.length > Number(req.params.top)
-            ? Number(req.params.top)
-            : wordList.length;
-        const frecuencies: { word: string; count: number }[] = [];
-
-        // build up JSON to return according to the values found and the top parameter
-        for (let i = 0; i < length; i++) {
-          const w = wordList[i];
-          const c = wordCounts[w];
-          frecuencies.push({ word: w, count: c });
-        }
+        const requestedTop = Math.max(1, parseInt(req.params.top, 10) || 10);
+        const length: number = Math.min(wordList.length, requestedTop);
+        const frecuencies = wordList.slice(0, length).map(w => ({ word: w, count: wordCounts[w] }));
 
         cb(null, { frecuencies });
       }
@@ -81,10 +63,9 @@ class TextReaderEngine implements multer.StorageEngine {
 
   /**
    * @param  {Request} _req
-   * @param  {Express.Multer.File} file
-   * @param  {(error:Error|null)=>void} cb
-   * * Function not used since we are not storing the file
-   * ! Do not remove, it is required by IStorageEngine
+   * @param  {Express.Multer.File} _file
+   * @param  {(error: Error | null) => void} cb
+   * ! Required by IStorageEngine interface
    */
   _removeFile = (
     _req: Request,
@@ -95,9 +76,9 @@ class TextReaderEngine implements multer.StorageEngine {
   };
 }
 
-// customized options limitations
+// Upload size limitations (1GB maximum)
 const limits = {
-  fileSize: 1000000000, //1gb
+  fileSize: 1_000_000_000,
   files: 1,
 };
 
