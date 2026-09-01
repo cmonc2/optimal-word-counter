@@ -7,11 +7,8 @@
     "strict": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "outDir": "dist",
-    "skipLibCheck": true,
-    "rootDir": "src",
-    "types": ["node"]
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "api/**/*"],
   "exclude": ["src/client/**/*", "node_modules", "dist"]
 }

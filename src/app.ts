@@ -1,12 +1,14 @@
 import express from 'express';
-import router from './router'
+import router from './router';
 import uploader from './utils/multer';
 import * as OpenApiValidator from 'express-openapi-validator';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
+import path from 'path';
+import fs from 'fs';
 
 class App {
-  public server;
+  public server: express.Express;
 
   constructor() {
     this.server = express();
@@ -20,44 +22,43 @@ class App {
 
     /**
      * * Swagger setups
-     */ 
+     */
+    const yamlSpecFile = path.resolve(process.cwd(), 'openapi.yml');
 
-    const yamlSpecFile = './openapi.yml',
-          validatorOptions = {
-            apiSpec: yamlSpecFile,
-            validateRequests: false,
-            fileUploader: false
-          }
+    if (fs.existsSync(yamlSpecFile)) {
+      const validatorOptions = {
+        apiSpec: yamlSpecFile,
+        validateRequests: false,
+        fileUploader: false,
+      };
 
-    this.server.use(OpenApiValidator.middleware(validatorOptions))
+      this.server.use(OpenApiValidator.middleware(validatorOptions));
+
+      const swaggerDocument = YAML.load(yamlSpecFile);
+      this.server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    }
 
     // error customization, if request is invalid
-    this.server.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-
-      res.status(err.status || 500).json({ message: err.message })
+    this.server.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      res.status(err.status || 500).json({ message: err.message });
     });
 
     /**
-     * * Swagger UI Setup (Serve API documentation page)
+     * * Multer upload endpoints (supports /api/v1/upload, /v1/upload, and /upload for serverless rewrites)
      */
-    const swaggerDocument = YAML.load(yamlSpecFile);
-    this.server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    const uploadHandler = (req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      (uploader as any)(req, res, (err: any) => {
+        if (err) return res.status(500).json({ message: err.message });
+        if (!req.file) return res.status(500).json({ message: 'File is missing' });
+        const data: any = { ...req.file };
 
-    /**
-     * * Multer setups
-     */ 
+        return res.json({ frecuencies: data.frecuencies });
+      });
+    };
 
-    this.server.use(
-      '/api/v1/upload/:top',
-      (req: express.Request, res: express.Response, _next: express.NextFunction) => {
-        uploader(req, res, (err: any) => {
-          if(err) return res.status(500).json({ message: err.message })
-          if(!req.file) return res.status(500).json({ message: "File is missing" })
-          const data: any = { ...req.file }
-
-          return res.json({ frecuencies: data.frecuencies })
-        })
-    })
+    this.server.use('/api/v1/upload/:top', uploadHandler);
+    this.server.use('/v1/upload/:top', uploadHandler);
+    this.server.use('/upload/:top', uploadHandler);
   }
 
   routes() {

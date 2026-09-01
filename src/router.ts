@@ -8,7 +8,7 @@ const clientDistPath = path.resolve(import.meta.dirname, '../dist');
 router.use(express.static(clientDistPath));
 router.use(express.static('src/public'));
 
-router.use((_req, res, _next) => {
+router.use((_req: express.Request, res: express.Response, _next: express.NextFunction) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 

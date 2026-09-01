@@ -81,9 +81,35 @@ function App() {
       body: formData
     })
       .then(async response => {
-        const data = await response.json()
-        if (response.status !== 200) {
-          throw new Error(data.message || "Something went wrong")
+        if (response.status === 413) {
+          throw new Error('File is too large for processing (maximum allowed size is 4.5 MB).')
+        }
+        if (response.status === 404) {
+          throw new Error('Upload endpoint not found (HTTP 404). Please try again.')
+        }
+
+        let data: any
+        if (typeof response.json === 'function') {
+          try {
+            data = await response.json()
+          } catch {
+            if (typeof response.text === 'function') {
+              const text = await response.text()
+              throw new Error(text ? `Server error: ${text.slice(0, 100)}` : 'Invalid response from server')
+            }
+            throw new Error('Invalid JSON response from server')
+          }
+        } else if (typeof response.text === 'function') {
+          const text = await response.text()
+          try {
+            data = JSON.parse(text)
+          } catch {
+            throw new Error(text ? `Server error: ${text.slice(0, 100)}` : 'Invalid response from server')
+          }
+        }
+
+        if (response.status !== 200 || !data) {
+          throw new Error((data && data.message) || 'An error occurred while analyzing the file.')
         }
         return data
       })
