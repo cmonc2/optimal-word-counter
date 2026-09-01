@@ -1,4 +1,4 @@
-import React, { DragEvent, ChangeEvent } from 'react'
+import { DragEvent, ChangeEvent, FC } from 'react';
 
 interface DropzoneProps {
   file: File | null;
@@ -11,7 +11,7 @@ interface DropzoneProps {
   removeFile: () => void;
 }
 
-export const Dropzone: React.FC<DropzoneProps> = ({
+export const Dropzone: FC<DropzoneProps> = ({
   file,
   dragActive,
   loading,
@@ -19,13 +19,13 @@ export const Dropzone: React.FC<DropzoneProps> = ({
   handleDrop,
   handleFileChange,
   submitFile,
-  removeFile
+  removeFile,
 }) => {
   return (
     <div className="dropzone-wrapper">
       {!file ? (
         <div
-          className={`dropzone ${dragActive ? "drag-active" : ""}`}
+          className={`dropzone ${dragActive ? 'drag-active' : ''}`}
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
           onDragLeave={handleDrag}
@@ -40,8 +40,18 @@ export const Dropzone: React.FC<DropzoneProps> = ({
           />
           <label htmlFor="file-upload" className="dropzone-label">
             <div className="upload-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
               </svg>
             </div>
             <span className="upload-text-main">Drag & drop your file here</span>
@@ -52,8 +62,18 @@ export const Dropzone: React.FC<DropzoneProps> = ({
         <div className="file-card">
           <div className="file-info">
             <div className="file-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
             <div className="file-meta">
@@ -62,9 +82,9 @@ export const Dropzone: React.FC<DropzoneProps> = ({
             </div>
           </div>
           <div className="file-actions">
-            <button 
-              className="submit-check-btn" 
-              onClick={submitFile} 
+            <button
+              className="submit-check-btn"
+              onClick={submitFile}
               disabled={loading}
               title="Submit"
               aria-label="Submit"
@@ -72,25 +92,45 @@ export const Dropzone: React.FC<DropzoneProps> = ({
               {loading ? (
                 <span className="mini-spinner"></span>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               )}
             </button>
-            <button 
-              className="remove-btn" 
-              onClick={removeFile} 
-              title="Remove file" 
+            <button
+              className="remove-btn"
+              onClick={removeFile}
+              title="Remove file"
               aria-label="Remove file"
               disabled={loading}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};

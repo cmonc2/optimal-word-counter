@@ -1,17 +1,16 @@
-import multer from 'multer'
-import { Request } from 'express'
-
-const lineReader = require('line-reader')
-const TimSort = require('timsort')
+import multer from 'multer';
+import { Request } from 'express';
+import lineReader from 'line-reader';
+import TimSort from 'timsort';
 
 interface FileResult extends Partial<Express.Multer.File> {
-  frecuencies: { word: string, count: number }[];
+  frecuencies: { word: string; count: number }[];
 }
 
 class TextReaderEngine implements multer.StorageEngine {
-  constructor(){};
-  
-    /**
+  constructor() {}
+
+  /**
    * @param  {Request} _req
    * @param  {Express.Multer.File} file
    * @param  {(error:Error|null)=>void} cb
@@ -20,69 +19,66 @@ class TextReaderEngine implements multer.StorageEngine {
   _handleFile = (
     req: Request,
     file: Express.Multer.File,
-    cb: (error?: any, info?: FileResult) => void
+    cb: (error?: any, info?: FileResult) => void,
   ): void => {
-    let wordCounts: any = {};
+    const wordCounts: Record<string, number> = {};
 
-    // ! Do not use ecoding value of file since it is deprecated.
+    // ! Do not use encoding value of file since it is deprecated.
     if (file.mimetype !== 'text/plain') {
-      cb(new Error("File not supported"));
+      cb(new Error('File not supported'));
       return;
     }
 
-    // go trough each line of stream (using line-reader)
-    lineReader.eachLine(file.stream, function(line: string, last: boolean) {
+    // go through each line of stream (using line-reader)
+    lineReader.eachLine(file.stream, (line: string, last: boolean) => {
       // clean up punctuation and split by spaces/tabs/newlines
       // Using Unicode property escapes (\p{L} for letters, \p{N} for numbers)
       // to support multi-language UTF-8 text and ignore punctuation.
-      let words = line.trim().split(/[^\p{L}\p{N}']+/gu);
+      const words = line.trim().split(/[^\p{L}\p{N}']+/gu);
 
-      // iterate array of words and stack each one 
-      for(let i = 0; i < words.length; i++) {
-        let word = words[i].toLowerCase();
+      // iterate array of words and stack each one
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i].toLowerCase();
 
         if (!word) continue;
-    
-        if(wordCounts.hasOwnProperty(word)) {
+
+        if (Object.prototype.hasOwnProperty.call(wordCounts, word)) {
           wordCounts[word]++;
-        }
-        else {
+        } else {
           wordCounts[word] = 1;
         }
       }
 
-      if(last) {
+      if (last) {
         const wordList: string[] = Object.keys(wordCounts);
 
         // sort the most frequent words (descending by frequency, then alphabetically)
         TimSort.sort(wordList, (a: string, b: string) => {
-          if(wordCounts[a] < wordCounts[b])
-            return 1;
-      
-          if(wordCounts[a] === wordCounts[b] && a > b)
-            return 1;
-      
+          if (wordCounts[a] < wordCounts[b]) return 1;
+
+          if (wordCounts[a] === wordCounts[b] && a > b) return 1;
+
           return -1;
         });
 
-        let word: string;
-        let count: number;
-        let length: number = wordList.length > Number(req.params.top) ? Number(req.params.top) : wordList.length
-        let frecuencies = []
+        const length: number =
+          wordList.length > Number(req.params.top)
+            ? Number(req.params.top)
+            : wordList.length;
+        const frecuencies: { word: string; count: number }[] = [];
 
-        // build up JSON to return according to the values ​​found and the top parameter
-        for(let i = 0; i < length; i++) {
-          word = wordList[i];
-          count = wordCounts[word];
-          frecuencies.push({ word, count })
+        // build up JSON to return according to the values found and the top parameter
+        for (let i = 0; i < length; i++) {
+          const w = wordList[i];
+          const c = wordCounts[w];
+          frecuencies.push({ word: w, count: c });
         }
 
-        cb(null, { frecuencies })
+        cb(null, { frecuencies });
       }
     });
   };
 
-  
   /**
    * @param  {Request} _req
    * @param  {Express.Multer.File} file
@@ -92,8 +88,8 @@ class TextReaderEngine implements multer.StorageEngine {
    */
   _removeFile = (
     _req: Request,
-    file: Express.Multer.File,
-    cb: (error: Error | null) => void
+    _file: Express.Multer.File,
+    cb: (error: Error | null) => void,
   ): void => {
     cb(null);
   };
@@ -103,11 +99,11 @@ class TextReaderEngine implements multer.StorageEngine {
 const limits = {
   fileSize: 1000000000, //1gb
   files: 1,
-}
+};
 
 const uploader = multer({
   storage: new TextReaderEngine(),
-  limits
-}).single('file')
+  limits,
+}).single('file');
 
-export default uploader
+export default uploader;

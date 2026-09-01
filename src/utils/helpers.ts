@@ -15,10 +15,10 @@ type Options = {
  */
 export function FindOrCreateFile(path: string, opts: Options): Promise<void> {
   return new Promise((resolve, reject) => {
-    fs.open(path, 'r', err => {
+    fs.open(path, 'r', (err: NodeJS.ErrnoException | null) => {
       if (err && err.code === 'ENOENT') {
 
-        let data: string | Buffer;
+        let data: string | Buffer = '';
 
         if(opts) {
           if(opts.count) {

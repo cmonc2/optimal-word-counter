@@ -27,22 +27,23 @@ This app computes the top N most frequent (case-insensitive) words in a text fil
 * **Outputs:** Returns the top N most frequent words in the text file as a JSON array.
 
 ### Tech Stack
-* **Frontend:** React, Vite, TypeScript.
-* **Backend:** Node.js, Express, TypeScript.
-* **Testing:** Jest, Supertest.
+* **Frontend:** React 18, Vite, TypeScript.
+* **Backend:** Node.js 22, Express, TypeScript, Multer, Line-Reader, Timsort.
+* **Testing:** Vitest, Supertest, Testing Library.
+* **Containerization:** Docker Compose & VS Code Dev Containers (Rootless `su-exec node`).
 
 ---
 
 ## 🛠️ How to Install and Run the App
 
 ### Requirements
-* Node.js (v16.14.0 or newer)
-* Yarn (v1.22.10 or newer)
+* Node.js (v22 or newer)
+* [pnpm](https://pnpm.io/) (v11 or newer) / Docker
 
 ### Installation
-In the root folder, run the following commands to install dependencies and build the user interface:
+In the root folder, run the following command to install dependencies:
 ```bash
-yarn && yarn build
+pnpm install
 ```
 
 ### Configuration (Environment Variables)
@@ -56,22 +57,31 @@ cp .env.example .env
 * **Development Mode (with Hot Reloading):**
   Starts both the Express backend and the Vite dev server concurrently.
   ```bash
-  yarn dev
+  pnpm dev
   ```
   Open your browser and navigate to `http://localhost:5173` (or the port shown by Vite). The frontend will proxy API requests to the backend port.
 
 * **Production Mode:**
   Builds the React client assets and runs the Express server to serve both the API and the static frontend assets on the same port:
   ```bash
-  yarn build
-  yarn start
+  pnpm build
+  pnpm start
   ```
   Open your browser and navigate to `http://localhost:3000` (or your configured `PORT`).
 
 ### Running Tests
-Runs the full test suite (backend integration tests with Jest, followed by client-side tests with Vitest):
+Runs the full test suite (backend integration tests followed by client-side tests with Vitest):
 ```bash
-yarn test
+pnpm test
+```
+
+---
+
+## 🐳 Docker & Dev Containers
+
+Run the full-stack app in an isolated container:
+```bash
+docker compose up -d
 ```
 
 ---
@@ -88,9 +98,15 @@ Depending on the mode you started the app:
 4. View the calculated word frequencies displayed in the results area below.
 
 ### Using the API
-You can also send a `POST` request directly to the API endpoint (`/api/v1/upload/{top}`) using any HTTP client (like Postman or cURL) sending the file as `multipart/data-form`.
+You can also send a `POST` request directly to the API endpoint (`/api/v1/upload/{top}`) using any HTTP client (like Postman or cURL) sending the file as `multipart/form-data`.
 
 ### API Documentation (Swagger)
 The project includes interactive API documentation generated via Swagger. Depending on the mode you started the app:
 * **In Development:** Navigate to `http://localhost:5173/api-docs` (Vite's server automatically proxies this to the backend).
 * **In Production / Server Mode:** Navigate to `http://localhost:3000/api-docs` (or your configured `PORT`).
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

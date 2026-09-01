@@ -1,13 +1,18 @@
 coverage
 node_modules
+.pnpm-store
 yarn-error.log*
+pnpm-debug.log*
 
 # Test generated files
 src/__tests__/dummy.txt
 src/__tests__/image.jpg
 
 # Build folders
+/dist
 src/client/dist/
 
 # Environment variables
 .env
+.env.local
+.DS_Store

@@ -32,7 +32,7 @@ class App {
     this.server.use(OpenApiValidator.middleware(validatorOptions))
 
     // error customization, if request is invalid
-    this.server.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    this.server.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
 
       res.status(err.status || 500).json({ message: err.message })
     });
@@ -49,7 +49,7 @@ class App {
 
     this.server.use(
       '/api/v1/upload/:top',
-      (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      (req: express.Request, res: express.Response, _next: express.NextFunction) => {
         uploader(req, res, (err: any) => {
           if(err) return res.status(500).json({ message: err.message })
           if(!req.file) return res.status(500).json({ message: "File is missing" })

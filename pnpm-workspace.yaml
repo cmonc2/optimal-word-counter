@@ -1,0 +1,9 @@
+packages:
+  - '.'
+  - 'src/client'
+
+allowBuilds:
+  esbuild: true
+  '@scarf/scarf': false
+
+minimumReleaseAge: 0

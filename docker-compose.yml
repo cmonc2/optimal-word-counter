@@ -1,0 +1,20 @@
+services:
+  optimal-word-counter:
+    container_name: optimal-word-counter-container
+    build: .
+    working_dir: /app
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - optimal_word_counter_node_modules:/app/node_modules
+      - optimal_word_counter_client_node_modules:/app/src/client/node_modules
+      - pnpm_store:/home/node/.pnpm-store
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+
+volumes:
+  pnpm_store:
+  optimal_word_counter_node_modules:
+  optimal_word_counter_client_node_modules:

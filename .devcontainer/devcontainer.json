@@ -1,0 +1,13 @@
+{
+  "name": "Optimal Word Counter Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "optimal-word-counter",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}
