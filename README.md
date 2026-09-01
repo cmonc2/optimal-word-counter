@@ -1,7 +1,5 @@
 # ⭐ Optimal Word Counter
 
-A high-performance full-stack TypeScript monorepo built with React 18, Vite, Express, and TimSort that processes multi-language text files via line-by-line streams to compute exact word frequencies with zero memory overhead, deployed serverless on Vercel.
-
 <div align="center">
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Click_here_to_try_the_app-23c45e?style=for-the-badge&logo=vercel&logoColor=white)](https://optimal-word-counter.vercel.app/)

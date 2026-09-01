@@ -1,6 +1,7 @@
 {
   "name": "optimal-word-counter",
   "version": "1.0.0",
+  "description": "High-performance full-stack TypeScript monorepo to process large text files via line streams and compute top frequent words.",
   "private": true,
   "type": "module",
   "license": "MIT",
