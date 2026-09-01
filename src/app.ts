@@ -7,6 +7,12 @@ import YAML from 'yamljs';
 import path from 'path';
 import fs from 'fs';
 
+const SWAGGER_CSS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css';
+const SWAGGER_JS_URLS = [
+  'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.js',
+];
+
 class App {
   public server: express.Express;
 
@@ -35,7 +41,14 @@ class App {
       this.server.use(OpenApiValidator.middleware(validatorOptions));
 
       const swaggerDocument = YAML.load(yamlSpecFile);
-      this.server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+      this.server.use(
+        '/api-docs',
+        swaggerUi.serve,
+        swaggerUi.setup(swaggerDocument, {
+          customCssUrl: SWAGGER_CSS_URL,
+          customJs: SWAGGER_JS_URLS,
+        }),
+      );
     }
 
     // error customization, if request is invalid
