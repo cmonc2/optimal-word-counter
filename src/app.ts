@@ -1,6 +1,6 @@
 import express from 'express';
-import router from './router';
-import uploader from './utils/multer';
+import router from './router.js';
+import uploader from './utils/multer.js';
 import * as OpenApiValidator from 'express-openapi-validator';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
